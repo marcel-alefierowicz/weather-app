@@ -2,9 +2,10 @@
 import Layout from "../layouts/Layout.astro";
 import nearest from "../../lib/nearest";
 import codes from '../codes';
+import '../global.css';
 
-const res = await fetch("https://api.open-meteo.com/v1/metno?latitude=53.13&longitude=23.16&hourly=temperature_2m&current_weather=true");
-
+const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=53.13&longitude=23.16&hourly=temperature_2m&models=best_match&current_weather=true"); // Bialystok
+// const res = await fetch("https://api.open-meteo.com/v1/dwd-icon?latitude=51.51&longitude=-0.13&hourly=temperature_2m&current_weather=true"); // London
 const data = await res.json();
 
 let time = data.hourly.time;
@@ -15,18 +16,18 @@ time.forEach((date, index) => {
 const temperature = data.hourly.temperature_2m[nearest(time, new Date())]
 const weathercode = String(data.current_weather.weathercode);
 
-console.log(codes[weathercode]);
+// console.log(data.current_weather);
 
 ---
 
 <Layout title="Weather">
-  <div class="flex flex-col w-2/5 h-2/3 bg-sky-900 bg-opacity-25 rounded-2xl">
+  <div class="flex flex-col w-2/5 h-2/3 bg-[url('/img/morning-clouds.gif')] bg-cover rounded-2xl">
     <div class="flex flex-col justify-center items-center h-1/3 rounded-2xl">
-      <h1 class="text-black font-semibold text-xl drop-shadow-xl">
+      <h1 class="text-white font-semibold text-xl drop-shadow-xl">
         Białystok
       </h1>
-      <p class="text-black text-6xl drop-shadow-xl font-bold">{temperature}°C</p>
-      <p class="text-black text-md drop-shadow-xl font-semibold">{codes[weathercode]}</p>
+      <p class="text-white text-6xl drop-shadow-xl font-semibold">{temperature}°</p>
+      <p class="text-white text-md drop-shadow-xl font-semibold">{codes[weathercode]}</p>
     </div>
   </div>
 </Layout>
