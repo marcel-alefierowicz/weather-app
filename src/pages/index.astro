@@ -1,13 +1,16 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import nearest from "../../lib/nearest";
 import codes from '../codes';
 import '../global.css';
 
-const lat = '51.5072';
-const lon = '0.1276';
+// const lat = '51.5072'; // London
+// const lon = '0.1276';  // 
 
-const weather = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m&models=best_match&current_weather=true`); // Bialystok
+const lat = '53.1325';
+const lon = '23.1688';
+
+
+const weather = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min&current_weather=true&timezone=auto`); // Bialystok
 const location = await fetch(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&apiKey=578e174b86d84134a1eb2c82258823f9`);
 
 const weatherdata = await weather.json();
@@ -15,24 +18,30 @@ const locationdata = await location.json();
 
 console.log(locationdata.features[0].properties.city);
 
-let time = weatherdata.hourly.time;
-time.forEach((date, index) => {  
-		time[index] = new Date(date);
-});
+// let time = weatherdata.hourly.time;
+// time.forEach((date, index) => {  
+// 		time[index] = new Date(date);
+// });
 
-const temperature = weatherdata.hourly.temperature_2m[nearest(time, new Date())];
+// const temperature = weatherdata.hourly.temperature_2m[nearest(time, new Date())];
 const weathercode = String(weatherdata.current_weather.weathercode);
+const temperature = weatherdata.current_weather.temperature;
+const min = weatherdata.daily.temperature_2m_min[0];
+const max = weatherdata.daily.temperature_2m_max[0];
+
 
 ---
 
 <Layout title="Weather">
-  <div class="flex flex-col w-2/5 h-2/3 bg-[url('/img/morning-clouds.gif')] bg-cover rounded-2xl">
+  <div class="flex flex-col w-2/5 h-2/3 bg-[url('/img/morning-clouds.gif')] bg-cover items-center rounded-2xl">
     <div class="flex flex-col justify-center items-center h-1/3 rounded-2xl">
-      <h1 class="text-white font-semibold text-xl drop-shadow-xl">
+      <h1 class="text-white font-semibold text-2xl drop-shadow-xl">
         {locationdata.features[0].properties.city}
       </h1>
       <p class="text-white text-6xl drop-shadow-xl font-semibold">{temperature}°</p>
-      <p class="text-white text-md drop-shadow-xl font-semibold">{codes[weathercode]}</p>
+      <p class="text-white text-lg drop-shadow-xl font-semibold">{codes[weathercode]}</p>
+      <p class="text-white text-md drop-shadow-xl font-semibold">H:{max}° L:{min}°</p>
     </div>
+    <div class="flex flex-col backdrop-blur-xl w-3/4 h-1/3 mx-3 rounded-xl"></div>
   </div>
 </Layout>
