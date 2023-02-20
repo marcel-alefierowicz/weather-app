@@ -4,7 +4,7 @@ import codes from "../codes";
 import moment from "moment";
 import Sun from "astro-heroicons/mini/Sun.astro";
 import Cloud from "astro-heroicons/mini/Cloud.astro";
-
+import CalendarDays from 'astro-heroicons/mini/CalendarDays.astro'
 // const lat = '51.5072'; // London
 // const lon = '0.1276';  //
 
@@ -50,21 +50,29 @@ const max = weatherdata.daily.temperature_2m_max[0];
     <div
       class="flex flex-col justify-between backdrop-blur-md w-4/5 p-4 rounded-xl gap-3"
     >
+      <div class="flex flex-row gap-2">
+        <CalendarDays class="w-4 h-4 text-gray-400"/>
+        <p class="font-semibold text-xs text-gray-400">7 day forecast</p>
+      </div>
       {
         weatherdata.daily.time.map((time, key) => (
           <div class="flex flex-col gap-3">
-            <div class="flex flex-row h-1/10 text-sm items-center gap-2">
+            <div class="flex flex-row justify-between h-1/10 text-sm items-center gap-2">
               <p class="text-gray-300 font-semibold">
-                {moment(time).format("ddd Do")},{" "}
-                {weatherdata.daily.temperature_2m_max[key]}
+                {moment(time).format("ddd, Do")}{" "}
               </p>
+
               {weatherdata.daily.weathercode[key] == 0 ? (
                 <Sun class="w-5 h-5 text-gray-300" />
               ) : (
                 <Cloud class="w-5 h-5 text-gray-300" />
               )}
+              <p class="text-gray-300 font-semibold">
+                L: {weatherdata.daily.temperature_2m_min[key]}°, H:{" "}
+                {weatherdata.daily.temperature_2m_max[key]}°{" "}
+              </p>
             </div>
-            <hr class="border-gray-500" />
+            {key != 6 && <hr class="border-gray-500" /> }
           </div>
         ))
       }
